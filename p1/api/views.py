@@ -33,21 +33,21 @@ def fileUploader(request):
         return Response({"error": f"Error reading files: {str(e)}"}, status=400)
 
     allfile = pd.merge(fl1, fl2, on='SKUs')
+    if "Current stocks" in allfile.columns:
+        allfile.drop(columns=["Current stocks"], inplace=True)
     allfile["Sales Forecast"] = allfile["Last month sales"] * allfile["SKUs"].map(SALES_INCREASE)
     allfile["Purchase Order (PO)"] = allfile["Sales Forecast"] * allfile["Price"]
-
+  
     output_file = io.BytesIO()
     allfile.to_excel(output_file, index=False)
+    output_file.seek(0)
 
     processed_file = Uploadfile()
     processed_file.file.save("processed_sales.xlsx", ContentFile(output_file.read()))
     processed_file.save()
+    file_url = processed_file.file.url
 
-    serializer = UploadFileserializear(processed_file)
 
-    response = FileResponse(output_file, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = 'attachment; filename="processed_sales.xlsx"'
-
-    return Response(serializer.data, status=201)  
+    return Response({"file": file_url}, status=201)
 
 

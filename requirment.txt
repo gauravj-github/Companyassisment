@@ -1,0 +1,15 @@
+--python installation--
+pip install django
+pip install django-cors-headers
+pip install djangorestframework
+pip install pandas 
+pip install openpyxl
+
+
+--react installation--
+create vite@latest my-vite-app   
+npm i axios
+
+
+ "axios": "^1.7.9",
+"react": "^19.0.0",
